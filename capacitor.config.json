@@ -1,0 +1,9 @@
+{
+  "appId": "ua.jon.mymessenger",
+  "appName": "Мій Месенджер",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "http",
+    "cleartext": true
+  }
+}

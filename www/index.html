@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Мій Месенджер</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== ЕКРАНИ АВТОРИЗАЦІЇ ===== -->
+  <div id="auth-wrapper" class="auth-wrapper">
+    <div class="auth-box">
+      <div class="auth-logo">Мій Месенджер</div>
+
+      <!-- Крок 1: телефон -->
+      <div id="screen-phone" class="auth-screen">
+        <h2>Введіть номер телефону</h2>
+        <p class="auth-hint">Ми надішлемо SMS з кодом підтвердження</p>
+        <input id="input-phone" type="tel" placeholder="+380 XX XXX XX XX">
+        <button id="btn-send-code" class="auth-btn">Отримати код</button>
+        <div id="error-phone" class="auth-error"></div>
+      </div>
+
+      <!-- Крок 2: код з SMS -->
+      <div id="screen-code" class="auth-screen hidden">
+        <h2>Введіть код з SMS</h2>
+        <p class="auth-hint">Код надіслано на <span id="code-phone-display"></span></p>
+        <input id="input-code" type="text" maxlength="6" placeholder="000000">
+        <button id="btn-verify-code" class="auth-btn">Підтвердити</button>
+        <div id="error-code" class="auth-error"></div>
+        <a href="#" id="link-resend">Надіслати код ще раз</a>
+        <a href="#" id="link-change-phone">Змінити номер</a>
+      </div>
+
+      <!-- Крок 3а: реєстрація нового користувача -->
+      <div id="screen-register" class="auth-screen hidden">
+        <h2>Створення акаунту</h2>
+        <p class="auth-hint">Ім'я необов'язкове — можна залишити порожнім</p>
+        <input id="input-name" type="text" placeholder="Ваше ім'я (необов'язково)">
+        <input id="input-new-password" type="password" placeholder="Придумайте пароль">
+        <button id="btn-register" class="auth-btn">Зареєструватися</button>
+        <div id="error-register" class="auth-error"></div>
+      </div>
+
+      <!-- Крок 3б: вхід (номер вже зареєстрований) -->
+      <div id="screen-login" class="auth-screen hidden">
+        <h2>З поверненням!</h2>
+        <p class="auth-hint">Введіть пароль для <span id="login-phone-display"></span></p>
+        <input id="input-login-password" type="password" placeholder="Пароль">
+        <button id="btn-login" class="auth-btn">Увійти</button>
+        <div id="error-login" class="auth-error"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ГОЛОВНИЙ ЕКРАН МЕСЕНДЖЕРА ===== -->
+  <div class="app hidden" id="app-main">
+
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <button class="icon-btn" id="menu-btn" title="Меню">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
+        </button>
+        <div class="my-avatar" id="my-avatar">Я</div>
+        <div class="search-box">
+          <input type="text" placeholder="Пошук">
+        </div>
+      </div>
+
+      <div class="chat-list">
+        <div class="chat-item active" id="chat-item-main">
+          <div class="avatar avatar-blue">З</div>
+          <div class="chat-item-info">
+            <div class="chat-item-top">
+              <span class="chat-item-name">Загальний чат</span>
+              <span class="chat-item-time" id="sidebar-last-time">—</span>
+            </div>
+            <div class="chat-item-bottom">
+              <span class="chat-item-last-msg" id="sidebar-last-msg">Немає повідомлень</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-panel">
+      <div class="chat-header">
+        <div class="avatar avatar-blue">З</div>
+        <div class="chat-header-info">
+          <div class="chat-header-name">Загальний чат</div>
+          <div class="chat-header-status" id="connection-status">з'єднання...</div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="icon-btn" id="call-audio-btn" title="Аудіодзвінок">
+            <svg viewBox="0 0 24 24" width="21" height="21"><path fill="currentColor" d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.9 21 3 13.1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8z"/></svg>
+          </button>
+          <button class="icon-btn" id="call-video-btn" title="Відеодзвінок">
+            <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M17 10.5V7c0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1v10c0 .6.4 1 1 1h12c.6 0 1-.4 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="chat-log" class="chat-log"></div>
+
+      <div class="input-row">
+        <input id="message-input" type="text" placeholder="Написати повідомлення" autofocus>
+        <button id="send-btn" title="Надіслати">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== БОКОВЕ МЕНЮ ===== -->
+  <div id="menu-overlay" class="menu-overlay hidden">
+    <div class="menu-drawer">
+      <div class="menu-profile">
+        <div class="my-avatar big" id="menu-avatar">Я</div>
+        <div class="menu-profile-name" id="menu-profile-name">—</div>
+        <div class="menu-profile-phone" id="menu-profile-phone">—</div>
+      </div>
+      <div class="menu-items">
+        <div class="menu-item" id="menu-settings-item">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M19.1 12.9c.1-.3.1-.6.1-.9s0-.6-.1-.9l2-1.6c.2-.1.2-.4.1-.6l-1.9-3.3c-.1-.2-.4-.3-.6-.2l-2.4 1c-.5-.4-1-.7-1.6-.9l-.4-2.6c0-.2-.2-.4-.5-.4h-3.8c-.3 0-.5.2-.5.4l-.4 2.6c-.6.2-1.1.5-1.6.9l-2.4-1c-.2-.1-.5 0-.6.2L1.6 8.9c-.1.2-.1.5.1.6l2 1.6c-.1.3-.1.6-.1.9s0 .6.1.9l-2 1.6c-.2.1-.2.4-.1.6l1.9 3.3c.1.2.4.3.6.2l2.4-1c.5.4 1 .7 1.6.9l.4 2.6c.1.2.3.4.5.4h3.8c.3 0 .5-.2.5-.4l.4-2.6c.6-.2 1.1-.5 1.6-.9l2.4 1c.2.1.5 0 .6-.2l1.9-3.3c.1-.2.1-.5-.1-.6l-2-1.6zM12 15.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/></svg>
+          <span>Налаштування</span>
+        </div>
+        <div class="menu-item danger" id="menu-logout-item">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M16 13v-2H7V8l-5 4 5 4v-3z"/><path fill="currentColor" d="M20 3H12c-1.1 0-2 .9-2 2v4h2V5h8v14h-8v-4h-2v4c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/></svg>
+          <span>Вихід</span>
+        </div>
+      </div>
+    </div>
+    <div class="menu-backdrop" id="menu-backdrop"></div>
+  </div>
+
+  <!-- ===== ЕКРАН НАЛАШТУВАНЬ (заглушка) ===== -->
+  <div id="settings-overlay" class="menu-overlay hidden">
+    <div class="settings-box">
+      <div class="settings-header">
+        <button class="icon-btn" id="settings-back-btn">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20v-2z"/></svg>
+        </button>
+        <span>Налаштування</span>
+      </div>
+      <div class="settings-body">
+        <p class="auth-hint">Розділ у розробці. Тут з'являться: зміна імені, аватарки, сповіщення, конфіденційність.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ВХІДНИЙ ДЗВІНОК ===== -->
+  <div id="incoming-call-modal" class="menu-overlay hidden">
+    <div class="incoming-call-box">
+      <div class="my-avatar big" id="incoming-call-avatar">?</div>
+      <div class="incoming-call-name" id="incoming-call-name">Хтось</div>
+      <div class="incoming-call-type" id="incoming-call-type">аудіодзвінок...</div>
+      <div class="incoming-call-actions">
+        <button class="call-action-btn reject" id="reject-call-btn" title="Відхилити">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M12 9c-1.6 0-3.2.3-4.6.8-.4.2-.7.6-.7 1.1v2.8c0 .4.2.8.5 1 .3.2.7.3 1.1.2 1.1-.4 2.4-.6 3.7-.6s2.6.2 3.7.6c.1 0 .3.1.4.1.3 0 .5-.1.7-.2.3-.2.5-.6.5-1v-2.8c0-.5-.3-.9-.7-1.1C15.2 9.3 13.6 9 12 9z" transform="rotate(135 12 12)"/></svg>
+        </button>
+        <button class="call-action-btn accept" id="accept-call-btn" title="Прийняти">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.9 21 3 13.1 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1L6.6 10.8z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ЕКРАН АКТИВНОГО ДЗВІНКА ===== -->
+  <div id="call-screen" class="call-screen hidden">
+    <video id="remote-video" class="remote-video" autoplay playsinline></video>
+    <div class="call-info" id="call-info-audio">
+      <div class="my-avatar big" id="call-avatar">?</div>
+      <div class="call-name" id="call-name">—</div>
+      <div class="call-status" id="call-status">З'єднання...</div>
+    </div>
+    <video id="local-video" class="local-video hidden" autoplay playsinline muted></video>
+    <div class="call-controls">
+      <button class="call-action-btn mute" id="mute-btn" title="Вимкнути мікрофон">
+        <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M12 14c1.7 0 3-1.3 3-3V5c0-1.7-1.3-3-3-3S9 3.3 9 5v6c0 1.7 1.3 3 3 3zm5-3c0 2.8-2.2 5-5 5s-5-2.2-5-5H5c0 3.5 2.6 6.4 6 6.9V21h2v-3.1c3.4-.5 6-3.4 6-6.9h-2z"/></svg>
+      </button>
+      <button class="call-action-btn end-call" id="end-call-btn" title="Завершити дзвінок">
+        <svg viewBox="0 0 24 24" width="26" height="26"><path fill="currentColor" d="M12 9c-1.6 0-3.2.3-4.6.8-.4.2-.7.6-.7 1.1v2.8c0 .4.2.8.5 1 .3.2.7.3 1.1.2 1.1-.4 2.4-.6 3.7-.6s2.6.2 3.7.6c.1 0 .3.1.4.1.3 0 .5-.1.7-.2.3-.2.5-.6.5-1v-2.8c0-.5-.3-.9-.7-1.1C15.2 9.3 13.6 9 12 9z" transform="rotate(135 12 12)"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

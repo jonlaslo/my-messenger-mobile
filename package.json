@@ -1,0 +1,16 @@
+{
+  "name": "my-messenger-mobile",
+  "version": "1.0.0",
+  "description": "Мій Месенджер — мобільна версія (Android через Capacitor)",
+  "scripts": {
+    "sync": "npx cap sync android",
+    "open-android": "npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/android": "^6.1.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.1.2"
+  }
+}
